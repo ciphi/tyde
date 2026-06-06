@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS artists (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (DATETIME('now')),
+    updated_at TEXT NOT NULL DEFAULT (DATETIME('now'))
+)
