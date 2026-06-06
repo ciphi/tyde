@@ -15,7 +15,7 @@ fn main() {
     let cfg = Config::new();
     let data = cfg.load_or_create();
 
-    let _db = Library::new(data.library.db_path.clone());
+    let _db = Library::init(data.library.db_path.clone());
 
     let cli = cli::get();
     utils::verbose::set_verbose(cli.verbose);
