@@ -64,6 +64,8 @@ impl AppLog {
         let (writer, guard) = appender.get_non_blocking_appender();
         let file_layer = fmt::layer()
             .with_writer(writer)
+            .with_ansi(false)
+            .with_target(false)
             .with_filter(LevelFilter::DEBUG);
 
         let init_result = tracing_subscriber::registry()
