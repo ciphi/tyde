@@ -1,9 +1,9 @@
+use serde::{Deserialize, Serialize};
 use std::{fs, io::Read, path::PathBuf};
-
 use tracing::trace;
 
-pub mod data;
-use data::ConfigData;
+pub mod library;
+use library::LibraryConfig;
 
 pub(crate) struct Config {
     pub directory: PathBuf,
@@ -57,5 +57,19 @@ impl Config {
         let toml = toml::to_string(data).expect("Failed to serialize config");
 
         fs::write(&self.filename, toml).expect("Failed to write config");
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub(crate) struct ConfigData {
+    #[serde(default)]
+    pub library: LibraryConfig,
+}
+
+impl Default for ConfigData {
+    fn default() -> Self {
+        Self {
+            library: LibraryConfig::default(),
+        }
     }
 }
