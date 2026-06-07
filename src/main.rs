@@ -9,24 +9,30 @@ use std::process::exit;
 use config::Config;
 use db::library::Library;
 use logging::AppLog;
-use tracing::error;
+use tracing::{error, info};
 
 fn main() {
     let _log = AppLog::default().init();
+    if let Err(e) = run() {
+        error!("{e}");
+    }
+}
 
+fn run() -> anyhow::Result<()> {
     let cfg = Config::new();
     let data = cfg.load_or_create();
 
-    let Ok(db) = Library::init(data.library.db_path.clone()) else {
-        error!("Failed to initialize library");
-        exit(1);
-    };
+    let db = Library::init(data.library.db_path.clone()).map_err(|e| {
+        negativeln!("Failed to initalize library");
+        e
+    })?;
 
-    let Ok(cli) = cli::get(&db).map_err(|e| {
-        error!("Failed to initialize cli");
-        error!("{:?}", e);
-        exit(1);
-    });
+    let cli = cli::get(&db).map_err(|e| {
+        negativeln!("Failed to initialize CLI");
+        e
+    })?;
 
     utils::verbose::set_verbose(cli.verbose);
+
+    Ok(())
 }
