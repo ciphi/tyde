@@ -1,17 +1,16 @@
 use clap::{Args, Subcommand};
 use tracing::instrument;
 
-use crate::db::artists;
-use crate::db::library::Library;
+use crate::db::{library::Library, models::artists};
 
 #[derive(Subcommand)]
-pub enum ArtistCommands {
+pub(crate) enum ArtistCommands {
     /// Add a new artist
     Add(AddArgs),
 }
 
 #[derive(Args)]
-struct AddArgs {
+pub(crate) struct AddArgs {
     /// Named arg
     #[arg(short, long)]
     name: String,

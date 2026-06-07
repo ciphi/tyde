@@ -27,6 +27,10 @@ pub fn insert(conn: &Connection, name: &str) -> Result<Artist> {
     println!("Added artist: {}", positive!("{}", name));
     info!(artist_name = name, created_at = now.to_string());
 
+    // ++    let s = now.format("%Y-%m-%d %H:%M:%S").to_string();
+    // ++    let naive = NaiveDateTime::parse_from_str("2026-06-07 14:35:22", "%Y-%m-%d %H:%M:%S")?;
+    // ++
+    // ++    let created_at = DateTime::<Utc>::from_naive_utc_and_offset(naive, Utc);
     Ok(Artist {
         id,
         name: name.to_string(),
