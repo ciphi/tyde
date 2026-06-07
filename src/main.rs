@@ -2,12 +2,11 @@ mod cli;
 mod config;
 mod db;
 mod logging;
+pub mod utils;
 
 use config::Config;
 use db::library::Library;
 use logging::AppLog;
-
-pub mod utils;
 
 fn main() {
     let _log = AppLog::default().init();
