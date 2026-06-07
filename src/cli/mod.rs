@@ -26,7 +26,6 @@ pub(crate) enum Commands {
 }
 
 ///Returns a new CLI value.
-#[instrument(name = "CLI")]
 pub fn get(library: &Library) -> Result<Cli, anyhow::Error> {
     let cli = Cli::parse();
     commands::handle_cli(&library, &cli.command)?;

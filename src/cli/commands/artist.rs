@@ -1,4 +1,5 @@
 use clap::{Args, Subcommand};
+use tracing::instrument;
 
 use crate::db::artists;
 use crate::db::library::Library;
@@ -16,6 +17,7 @@ struct AddArgs {
     name: String,
 }
 
+#[instrument(name = "artist", skip_all)]
 pub fn handle_command(library: &Library, command: &ArtistCommands) -> rusqlite::Result<()> {
     match command {
         ArtistCommands::Add(args) => artists::insert(&library.conn, &args.name)?,
