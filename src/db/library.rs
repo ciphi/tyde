@@ -3,14 +3,16 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use anyhow::bail;
 use rusqlite::{Connection, Error};
 use tracing::{debug, info, instrument};
 
 use crate::db::migrations::MIGRATIONS;
 
+#[derive(Debug)]
 pub(crate) struct Library {
     pub filepath: PathBuf,
-    conn: Connection,
+    pub conn: Connection,
 }
 
 impl Library {
