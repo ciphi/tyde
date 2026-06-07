@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use rusqlite::{Connection, Result, params};
 
 #[derive(Debug)]
-struct Artist {
+pub(crate) struct Artist {
     id: i64,
     /// Canonical name
     name: String,
