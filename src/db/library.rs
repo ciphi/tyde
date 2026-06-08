@@ -3,9 +3,8 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use anyhow::bail;
 use rusqlite::{Connection, Error};
-use tracing::{debug, info, instrument};
+use tracing::{info, instrument};
 
 use crate::db::migrations::MIGRATIONS;
 

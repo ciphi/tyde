@@ -1,7 +1,6 @@
 pub mod commands;
 
-use clap::{Parser, Subcommand, error};
-use tracing::instrument;
+use clap::{Parser, Subcommand};
 
 use crate::db::library::Library;
 
