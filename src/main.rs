@@ -1,16 +1,11 @@
 mod cli;
 mod config;
-mod db;
-pub mod library;
 mod logging;
-pub mod utils;
-
-use std::process::exit;
 
 use config::Config;
-use db::library::Library;
 use logging::AppLog;
-use tracing::{error, info};
+use tracing::error;
+use tyde::{db::library::Library, negativeln, utils::verbose};
 
 fn main() {
     let _log = AppLog::default().init();
@@ -33,7 +28,7 @@ fn run() -> anyhow::Result<()> {
         e
     })?;
 
-    utils::verbose::set_verbose(cli.verbose);
+    verbose::set_verbose(cli.verbose);
 
     Ok(())
 }

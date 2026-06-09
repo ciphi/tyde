@@ -9,14 +9,14 @@ use tracing::{info, instrument};
 use crate::db::migrations::MIGRATIONS;
 
 #[derive(Debug)]
-pub(crate) struct Library {
+pub struct Library {
     pub filepath: PathBuf,
     pub conn: Connection,
 }
 
 impl Library {
     #[instrument(name = "library_init", skip(filepath))]
-    pub(crate) fn init(filepath: PathBuf) -> Result<Self, anyhow::Error> {
+    pub fn init(filepath: PathBuf) -> Result<Self, anyhow::Error> {
         Self::ensure_parent_dirs(&filepath)?;
 
         let conn = Self::connect(&filepath)?;

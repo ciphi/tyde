@@ -19,12 +19,7 @@ impl<'a> ArtistRepository<'a> {
     ///
     /// Returns the row ID of the new entry from the artists table
     #[instrument(name = "add", skip_all)]
-    pub(crate) fn add(
-        &self,
-        name: &str,
-        kind: Option<NameKind>,
-        locale: Option<Language>,
-    ) -> Result<i64> {
+    pub fn add(&self, name: &str, kind: Option<NameKind>, locale: Option<Language>) -> Result<i64> {
         let artist_id = self.add_to_artists()?;
         let artist_name_id = self.add_name(artist_id, name, kind, locale)?;
         self.set_primary_name(artist_name_id, artist_id)?;

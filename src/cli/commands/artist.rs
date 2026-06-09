@@ -2,8 +2,7 @@ use anyhow::Result;
 use clap::{Args, Subcommand};
 use isolang::Language;
 use tracing::instrument;
-
-use crate::{
+use tyde::{
     db::library::Library,
     library::artists::{model::NameKind, repository::ArtistRepository},
 };

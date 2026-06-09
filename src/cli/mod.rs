@@ -1,8 +1,7 @@
 pub mod commands;
 
 use clap::{Parser, Subcommand};
-
-use crate::db::library::Library;
+use tyde::db::library::Library;
 
 #[derive(Parser)]
 #[command(version, about)]
