@@ -3,9 +3,9 @@ use clap::{Args, Subcommand};
 use isolang::Language;
 use tracing::instrument;
 
-use crate::db::{
-    library::Library,
-    models::artists::{self, NameKind},
+use crate::{
+    db::library::Library,
+    library::artists::{model::NameKind, repository::ArtistRepository},
 };
 
 #[derive(Subcommand)]
@@ -25,7 +25,7 @@ pub(crate) struct AddArgs {
     locale: Option<Language>,
 
     /// Represents the type of artist name
-    #[arg(long)]
+    #[arg(short = 't', long)]
     name_type: Option<NameKind>,
 }
 
@@ -37,15 +37,10 @@ fn validate_locale(s: &str) -> Result<Language, String> {
 
 #[instrument(name = "artist", skip_all)]
 pub fn handle_command(library: &Library, command: &ArtistCommands) -> Result<()> {
+    let repo = ArtistRepository { db: &library.conn };
     match command {
         ArtistCommands::Add(args) => {
-            let row_id = artists::add(
-                &library.conn,
-                &args.name,
-                args.name_type.clone(),
-                args.locale.clone(),
-            )?;
-            println!("Succesfully added {} with Id {}", &args.name, row_id);
+            repo.add(&args.name, args.name_type.clone(), args.locale.clone())?;
         }
     };
     Ok(())

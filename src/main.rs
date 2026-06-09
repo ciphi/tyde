@@ -1,6 +1,7 @@
 mod cli;
 mod config;
 mod db;
+pub mod library;
 mod logging;
 pub mod utils;
 
