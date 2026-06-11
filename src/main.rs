@@ -1,11 +1,11 @@
-mod cli;
-mod config;
-mod logging;
+// mod cli;
+// mod config;
+// mod logging;
 
-use config::Config;
-use logging::AppLog;
 use tracing::error;
-use tyde::{db::library::Library, negativeln, utils::verbose};
+use tyde::{
+    cli, config::Config, db::library::Library, logging::AppLog, negativeln, utils::verbose,
+};
 
 fn main() {
     let _log = AppLog::default().init();
