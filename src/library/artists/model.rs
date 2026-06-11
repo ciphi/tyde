@@ -1,5 +1,4 @@
 use crate::db::types::datetime_stamp::DateTimeStamp;
-use clap::ValueEnum;
 use strum::{Display, EnumString};
 
 #[derive(Debug)]
@@ -25,12 +24,22 @@ pub(crate) struct ArtistName {
     pub updated_at: DateTimeStamp,
 }
 
-#[derive(Debug, Clone, Display, EnumString, ValueEnum)]
+#[derive(Debug, Clone, Display, EnumString)]
 #[strum(serialize_all = "lowercase")]
 pub enum NameKind {
     Legal,
     Stage,
     Alias,
+}
+
+impl NameKind {
+    pub fn as_title(&self) -> &'static str {
+        match self {
+            NameKind::Alias => "Alias",
+            NameKind::Legal => "Legal",
+            NameKind::Stage => "Stage",
+        }
+    }
 }
 
 // pub(crate) fn lookup_names(conn: &Connection, artist: &[&str]) -> Result<Vec(ArtistName)> {
