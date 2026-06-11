@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 #[serde(default)]
-pub(crate) struct LibraryConfig {
+pub struct LibraryConfig {
     pub directory: PathBuf,
     pub db_path: PathBuf,
 }

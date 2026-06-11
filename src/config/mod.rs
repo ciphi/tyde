@@ -5,7 +5,7 @@ use tracing::trace;
 pub mod library;
 use library::LibraryConfig;
 
-pub(crate) struct Config {
+pub struct Config {
     pub directory: PathBuf,
     pub filename: PathBuf,
 }
@@ -47,7 +47,7 @@ impl Config {
         toml::from_str(&buffer).expect("Failed to parse config file")
     }
 
-    pub(crate) fn load_or_create(&self) -> ConfigData {
+    pub fn load_or_create(&self) -> ConfigData {
         self.ensure_exists();
         let data = self.load();
         data
@@ -61,7 +61,7 @@ impl Config {
 }
 
 #[derive(Serialize, Deserialize)]
-pub(crate) struct ConfigData {
+pub struct ConfigData {
     #[serde(default)]
     pub library: LibraryConfig,
 }

@@ -1,11 +1,12 @@
 pub mod commands;
 
 use clap::{Parser, Subcommand};
-use tyde::db::library::Library;
+
+use crate::db::library::Library;
 
 #[derive(Parser)]
 #[command(version, about)]
-pub(crate) struct Cli {
+pub struct Cli {
     /// Enable verbose messages
     #[arg(short, long)]
     pub verbose: bool,
