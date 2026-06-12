@@ -140,30 +140,35 @@ fn validate_name_variant(s: &str) -> Result<NameVariantRecord, String> {
 }
 
 #[instrument(name = "artist", skip_all)]
-pub fn handle_command(library: &Library, command: &ArtistCommands) -> Result<()> {
+pub(crate) fn handle_command(library: &Library, command: &ArtistCommands) -> Result<()> {
     let repo = ArtistRepository { db: &library.conn };
     match command {
-        ArtistCommands::Add(args) => {
-            println!("Artist: {}", args.name);
-            if !args.variant.is_empty() {
-                let mut variants_display = String::from("Variants:");
-                for variant in &args.variant {
-                    variants_display.push_str(&format!("\n  {}", variant));
-                }
-                println!("{}", variants_display);
-            }
-
-            let result = Confirm::new("Add entry?").with_default(false).prompt();
-            match result {
-                Ok(true) => {
-                    let _ = repo.add(&args.name, &args.variant)?;
-                }
-                Ok(false) => {
-                    println!("Cancelled")
-                }
-                Err(_) => println!("Error or aborted"),
-            }
+        ArtistCommands::Add(args) => handle_add_command(&repo, &args)?,
         }
     };
+    Ok(())
+}
+
+pub(crate) fn handle_add_command(repository: &ArtistRepository, args: &AddArgs) -> Result<()> {
+    println!("Artist: {}", args.name);
+    if !args.variant.is_empty() {
+        let mut variants_display = String::from("Variants:");
+        for variant in &args.variant {
+            variants_display.push_str(&format!("\n  {}", variant));
+        }
+        println!("{}", variants_display);
+    }
+
+    let result = Confirm::new("Add entry?").with_default(false).prompt();
+    match result {
+        Ok(true) => {
+            let _ = repository.add(&args.name, &args.variant)?;
+        }
+        Ok(false) => {
+            println!("Cancelled")
+        }
+        Err(_) => println!("Error or aborted"),
+    }
+
     Ok(())
 }
