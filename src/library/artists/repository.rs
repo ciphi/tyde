@@ -6,7 +6,10 @@ use tracing::{info, instrument};
 use anyhow::Result;
 
 use crate::{
-    db::types::datetime_stamp::DateTimeStamp, library::artists::model::NameKind, positive,
+    cli::commands::artist::{NameRecord, NameVariantRecord},
+    db::types::datetime_stamp::DateTimeStamp,
+    library::artists::model::NameKind,
+    positive,
 };
 
 // This struct's only job is to talk to the database for Actors
@@ -19,13 +22,22 @@ impl<'a> ArtistRepository<'a> {
     ///
     /// Returns the row ID of the new entry from the artists table
     #[instrument(name = "add", skip_all)]
-    pub fn add(&self, name: &str, kind: Option<NameKind>, locale: Option<Language>) -> Result<i64> {
+    pub fn add(&self, name: &NameRecord, variants: &Vec<NameVariantRecord>) -> Result<i64> {
         let artist_id = self.add_to_artists()?;
-        let artist_name_id = self.add_name(artist_id, name, kind, locale)?;
+        // Add primary first
+        let artist_name_id = self.add_name(artist_id, &name.name, &name.name_type, &name.locale)?;
         self.set_primary_name(artist_name_id, artist_id)?;
+        // Add variants
+        for variant in variants {
+            self.add_name(
+                artist_id,
+                &variant.record.name,
+                &variant.record.name_type,
+                &variant.record.locale,
+            )?;
+        }
 
         println!("Added artist: {}", positive!("{}", name));
-        info!(artist_name = name, artist_id, artist_name_id);
         Ok(artist_id)
     }
 
@@ -48,11 +60,11 @@ impl<'a> ArtistRepository<'a> {
         &self,
         artist_id: i64,
         name: &str,
-        kind: Option<NameKind>,
-        locale: Option<Language>,
+        kind: &Option<NameKind>,
+        locale: &Option<Language>,
     ) -> Result<i64> {
         let now = DateTimeStamp(Utc::now());
-        let kind_str: Option<String> = kind.map(|k| k.to_string());
+        let kind_str: Option<String> = kind.clone().map(|k| k.to_string());
         let locale_str: Option<&str> = locale.and_then(|l| l.to_639_1());
 
         self.db.execute(
@@ -67,6 +79,8 @@ impl<'a> ArtistRepository<'a> {
         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6)"#,
             params![&artist_id, name, kind_str, locale_str, &now, &now],
         )?;
+
+        info!(artist_name = name, artist_id);
 
         Ok(self.db.last_insert_rowid())
     }
