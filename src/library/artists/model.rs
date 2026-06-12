@@ -24,7 +24,7 @@ pub(crate) struct ArtistName {
     pub updated_at: DateTimeStamp,
 }
 
-#[derive(Debug, Clone, Display, EnumString)]
+#[derive(Debug, Copy, Clone, Display, EnumString)]
 #[strum(serialize_all = "lowercase")]
 pub enum NameKind {
     Legal,

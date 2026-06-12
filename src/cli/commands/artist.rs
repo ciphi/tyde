@@ -70,6 +70,16 @@ impl fmt::Display for NameRecord {
     }
 }
 
+impl NameRecord {
+    pub fn new(name: String, locale: Option<Language>, name_type: Option<NameKind>) -> Self {
+        Self {
+            name,
+            locale,
+            name_type,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct NameVariantRecord {
     pub(crate) record: NameRecord,
@@ -79,6 +89,12 @@ impl fmt::Display for NameVariantRecord {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", format_record(&self.record))?;
         Ok(())
+    }
+}
+
+impl NameVariantRecord {
+    pub fn new(record: NameRecord) -> Self {
+        Self { record }
     }
 }
 

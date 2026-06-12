@@ -1,4 +1,4 @@
-pub(crate) mod artist;
+pub mod artist;
 
 use anyhow::Result;
 
