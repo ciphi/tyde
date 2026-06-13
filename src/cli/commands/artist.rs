@@ -7,7 +7,11 @@ use tracing::instrument;
 
 use crate::{
     db::library::Library,
-    library::artists::{model::NameKind, repository::ArtistRepository},
+    library::artists::{
+        model::{ArtistName, NameKind},
+        repository::ArtistRepository,
+    },
+    negativeln, noticeln,
 };
 
 #[derive(Subcommand)]

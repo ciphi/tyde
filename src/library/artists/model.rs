@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::db::types::datetime_stamp::DateTimeStamp;
 use strum::{Display, EnumString};
 
@@ -14,14 +16,33 @@ pub(crate) struct Artist {
 pub(crate) struct ArtistName {
     pub id: i64,
     /// References ID from Artist table.
-    pub artist_id: String,
+    pub artist_id: i64,
     /// Localized name.
     pub name: String,
+    pub normalized_name: String,
     /// 2 char
-    pub locale: String,
-    pub kind: NameKind,
+    pub locale: Option<String>,
+    pub kind: Option<NameKind>,
     pub created_at: DateTimeStamp,
     pub updated_at: DateTimeStamp,
+}
+
+impl fmt::Display for ArtistName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut output = format!("{}", self.name);
+        let meta: Vec<String> = vec![
+            self.kind.as_ref().map(|t| t.as_title().to_string()),
+            self.locale.as_ref().map(|l| l.to_string()),
+        ]
+        .into_iter()
+        .filter_map(|x| x)
+        .collect();
+
+        if !meta.is_empty() {
+            output.push_str(&format!(" ({})", meta.join(", ")));
+        }
+        write!(f, "{}", output)
+    }
 }
 
 #[derive(Debug, Copy, Clone, Display, EnumString)]

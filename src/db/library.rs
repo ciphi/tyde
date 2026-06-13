@@ -6,7 +6,7 @@ use std::{
 use rusqlite::{Connection, Error};
 use tracing::{info, instrument};
 
-use crate::db::migrations::MIGRATIONS;
+use crate::{db::migrations::MIGRATIONS, library::artists::repository};
 
 #[derive(Debug)]
 pub struct Library {
@@ -57,6 +57,11 @@ impl Library {
 
             version += 1;
             Self::set_version(conn, version)?;
+
+            match version {
+                3 => Self::add_normalized_names(conn)?,
+                _ => {}
+            }
         }
 
         if original_version < version {
@@ -65,6 +70,25 @@ impl Library {
                 current = version,
                 "Library updated"
             )
+        }
+
+        Ok(())
+    }
+
+    fn add_normalized_names(conn: &Connection) -> rusqlite::Result<()> {
+        let mut stmt =
+            conn.prepare("SELECT id, name FROM artist_names WHERE normalized_name IS NULL")?;
+        let mut rows = stmt.query([])?;
+
+        while let Some(row) = rows.next()? {
+            let id: i64 = row.get(0)?;
+            let name: String = row.get(1)?;
+            let out = repository::ArtistRepository::normalize_name(&name);
+
+            conn.execute(
+                "UPDATE artist_names SET normalized_name = ?1 WHERE id = ?2",
+                (&out, id),
+            )?;
         }
 
         Ok(())
