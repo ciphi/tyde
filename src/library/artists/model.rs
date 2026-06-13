@@ -21,7 +21,7 @@ pub(crate) struct ArtistName {
     pub name: String,
     pub normalized_name: String,
     /// 2 char
-    pub locale: Option<String>,
+    pub lang: Option<String>,
     pub kind: Option<NameKind>,
     pub created_at: DateTimeStamp,
     pub updated_at: DateTimeStamp,
@@ -32,7 +32,7 @@ impl fmt::Display for ArtistName {
         let mut output = format!("{}", self.name);
         let meta: Vec<String> = vec![
             self.kind.as_ref().map(|t| t.as_title().to_string()),
-            self.locale.as_ref().map(|l| l.to_string()),
+            self.lang.as_ref().map(|l| l.to_string()),
         ]
         .into_iter()
         .filter_map(|x| x)

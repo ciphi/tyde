@@ -44,7 +44,7 @@ pub struct NameRecord {
     pub name: String,
 
     /// Locale code of the artist name in ISO-639-1 format
-    pub locale: Option<Language>,
+    pub lang: Option<Language>,
 
     /// Represents the type of artist name
     pub name_type: Option<NameKind>,
@@ -54,7 +54,7 @@ fn format_record(record: &NameRecord) -> String {
     let mut output = format!("{}", record.name);
     let meta: Vec<String> = vec![
         record.name_type.as_ref().map(|t| t.as_title().to_string()),
-        record.locale.as_ref().map(|l| l.to_string()),
+        record.lang.as_ref().map(|l| l.to_string()),
     ]
     .into_iter()
     .filter_map(|x| x)
@@ -75,10 +75,10 @@ impl fmt::Display for NameRecord {
 }
 
 impl NameRecord {
-    pub fn new(name: String, locale: Option<Language>, name_type: Option<NameKind>) -> Self {
+    pub fn new(name: String, lang: Option<Language>, name_type: Option<NameKind>) -> Self {
         Self {
             name,
-            locale,
+            lang,
             name_type,
         }
     }
@@ -118,7 +118,7 @@ fn validate_name(s: &str) -> Result<NameRecord, String> {
     for key in values {
         if let Some((key, value)) = key.split_once('=') {
             match key {
-                "locale" => {
+                "lang" => {
                     lang = Some(Language::from_639_1(value).ok_or(String::from(
                         "Ensure the value provided is ISO-639-1 compliant.",
                     ))?);
@@ -133,7 +133,7 @@ fn validate_name(s: &str) -> Result<NameRecord, String> {
 
     Ok(NameRecord {
         name: name.to_string(),
-        locale: lang,
+        lang: lang,
         name_type: kind,
     })
 }

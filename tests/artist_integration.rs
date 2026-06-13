@@ -49,13 +49,13 @@ fn add_creates_name_and_sets_primary() -> Result<(), Box<dyn std::error::Error>>
 }
 
 #[test]
-fn add_sets_kind_and_locale() -> Result<(), Box<dyn std::error::Error>> {
+fn add_sets_kind_and_lang() -> Result<(), Box<dyn std::error::Error>> {
     let lib = setup_library();
     let repo = repository(&lib);
 
-    let locale = Language::from_639_1("en");
+    let lang = Language::from_639_1("en");
     let kind = Some(NameKind::Alias);
-    let record = NameRecord::new("Test Artist Name".into(), locale, kind);
+    let record = NameRecord::new("Test Artist Name".into(), lang, kind);
 
     let variant: Vec<NameVariantRecord> = Vec::new();
     let result = repo.add(&record, &variant)?;
@@ -73,14 +73,14 @@ fn add_sets_kind_and_locale() -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(primary_name_id, result);
 
     // Get the name based on the primary ID from artist_names table
-    let (row_kind, row_locale): (String, String) = lib.conn.query_row(
-        "SELECT kind, locale FROM artist_names WHERE artist_id = ?1",
+    let (row_kind, row_lang): (String, String) = lib.conn.query_row(
+        "SELECT kind, lang FROM artist_names WHERE artist_id = ?1",
         [result],
         |row| Ok((row.get(0)?, row.get(1)?)),
     )?;
 
     assert_eq!(record.name_type.unwrap().to_string(), row_kind);
-    assert_eq!(record.locale.unwrap().to_639_1().unwrap(), row_locale);
+    assert_eq!(record.lang.unwrap().to_639_1().unwrap(), row_lang);
 
     Ok(())
 }
@@ -90,16 +90,16 @@ fn add_apply_all_variants() -> Result<(), Box<dyn std::error::Error>> {
     let lib = setup_library();
     let repo = repository(&lib);
 
-    let locale = Language::from_639_1("en");
+    let lang = Language::from_639_1("en");
     let kind = Some(NameKind::Alias);
-    let record = NameRecord::new("Test Artist Name".into(), locale, kind);
+    let record = NameRecord::new("Test Artist Name".into(), lang, kind);
     let mut variants: Vec<NameVariantRecord> = Vec::new();
 
     for i in 0..5 {
         let variant_name = format!("Name Variant {i}");
-        let variant_locale = Language::from_639_1("en");
+        let variant_lang = Language::from_639_1("en");
         let variant_kind = Some(NameKind::Alias);
-        let variant_record = NameRecord::new(variant_name, variant_locale, variant_kind);
+        let variant_record = NameRecord::new(variant_name, variant_lang, variant_kind);
         variants.push(NameVariantRecord::new(variant_record));
     }
 
@@ -119,15 +119,15 @@ fn add_apply_all_variants() -> Result<(), Box<dyn std::error::Error>> {
 
     for i in 0..variants.len() {
         let variant_name = format!("Name Variant {i}");
-        let (artist_id, row_kind, row_locale): (i64, String, String) = lib.conn.query_row(
-            "SELECT artist_id, kind, locale FROM artist_names WHERE name = ?1",
+        let (artist_id, row_kind, row_lang): (i64, String, String) = lib.conn.query_row(
+            "SELECT artist_id, kind, lang FROM artist_names WHERE name = ?1",
             [variant_name],
             |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
         )?;
 
         assert_eq!(result, artist_id);
         assert_eq!(record.name_type.unwrap().to_string(), row_kind);
-        assert_eq!(record.locale.unwrap().to_639_1().unwrap(), row_locale);
+        assert_eq!(record.lang.unwrap().to_639_1().unwrap(), row_lang);
     }
 
     Ok(())

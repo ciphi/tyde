@@ -27,7 +27,7 @@ impl<'a> ArtistRepository<'a> {
     #[instrument(name = "add", skip_all)]
     pub fn add(&self, name: &NameRecord, variants: &Vec<NameVariantRecord>) -> Result<i64> {
         let artist_id = self.add_to_artists()?;
-        let artist_name_id = self.add_name(artist_id, &name.name, &name.name_type, &name.locale)?;
+        let artist_name_id = self.add_name(artist_id, &name.name, &name.name_type, &name.lang)?;
 
         self.set_primary_name(artist_name_id, artist_id)?;
 
@@ -36,7 +36,7 @@ impl<'a> ArtistRepository<'a> {
                 artist_id,
                 &variant.record.name,
                 &variant.record.name_type,
-                &variant.record.locale,
+                &variant.record.lang,
             )?;
         }
 
@@ -75,11 +75,11 @@ impl<'a> ArtistRepository<'a> {
         artist_id: i64,
         name: &str,
         kind: &Option<NameKind>,
-        locale: &Option<Language>,
+        lang: &Option<Language>,
     ) -> Result<i64> {
         let now = DateTimeStamp(Utc::now());
         let kind_str: Option<String> = kind.clone().map(|k| k.to_string());
-        let locale_str: Option<&str> = locale.and_then(|l| l.to_639_1());
+        let lang_str: Option<&str> = lang.and_then(|l| l.to_639_1());
 
         self.db.execute(
             r#"
@@ -88,7 +88,7 @@ impl<'a> ArtistRepository<'a> {
             name, 
             normalized_name,
             kind, 
-            locale, 
+            lang, 
             created_at, 
             updated_at
         ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)"#,
@@ -97,7 +97,7 @@ impl<'a> ArtistRepository<'a> {
                 name,
                 Self::normalize_name(name),
                 kind_str,
-                locale_str,
+                lang_str,
                 &now,
                 &now
             ],
@@ -134,7 +134,7 @@ impl<'a> ArtistRepository<'a> {
                             .map(|s| NameKind::from_str(&s))
                             .transpose()
                             .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        locale: row.get(5)?,
+                        lang: row.get(5)?,
                         created_at: row.get(6)?,
                         updated_at: row.get(7)?,
                     })
@@ -187,7 +187,7 @@ impl<'a> ArtistRepository<'a> {
                         .map(|s| NameKind::from_str(&s))
                         .transpose()
                         .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                    locale: row.get(5)?,
+                    lang: row.get(5)?,
                     created_at: row.get(6)?,
                     updated_at: row.get(7)?,
                 })
