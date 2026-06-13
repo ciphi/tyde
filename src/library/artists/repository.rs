@@ -40,7 +40,18 @@ impl<'a> ArtistRepository<'a> {
             )?;
         }
 
-        println!("Added artist: {}", positive!("{}", name));
+        let variant_label = match variants.len() {
+            2.. => &format!("(with {} variants)", variants.len()),
+            1.. => "(with 1 variant)",
+            _ => "",
+        };
+
+        println!(
+            "Added artist: {} {}",
+            positive!("{}", name.name),
+            variant_label
+        );
+
         Ok(artist_id)
     }
 
